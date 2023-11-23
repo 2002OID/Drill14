@@ -2,8 +2,9 @@ import math
 
 from pico2d import get_time, load_image, load_font, clamp, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, \
     SDLK_UP, SDLK_DOWN, \
-    draw_rectangle
+    draw_rectangle, get_canvas_width, get_canvas_height
 
+import server
 from ball import Ball
 import game_world
 import game_framework
@@ -275,19 +276,25 @@ class Boy:
         self.font = load_font('ENCR10B.TTF', 24)
         self.state_machine = StateMachine(self)
         self.state_machine.start()
+        self.x, self.y = server.background.w // 2, server.background.h // 2
 
     def set_background(self, bg):
-        # fill here
+        self.bg = bg
+        self.x = self.bg.w / 2
+        self.y = self.bg.h / 2
         pass
 
     def update(self):
         self.state_machine.update()
+        self.x = clamp(50, self.x, self.bg.w - 50)
+        self.y = clamp(50, self.y, self.bg.h - 50)
 
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))
 
     def draw(self):
-        # fill here
+        sx, sy = self.x - self.bg.window_left, self.y - self.bg.window_bottom
+        self.image.clip_draw(int(self.frame) * 100, self.action * 100, 100, 100, sx, sy)
         pass
 
     def get_bb(self):
